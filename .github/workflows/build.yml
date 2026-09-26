@@ -3,12 +3,12 @@ on: [workflow_dispatch]
 
 jobs:
   build:
-    runs-on: windows-2022 # Tam uyumlu, sorunsuz VS 2022 ortamı!
+    runs-on: windows-2022 # Tam uyumlu VS 2022 ve kararlı CUDA 12 ortamı
     steps:
       - uses: actions/checkout@v4
 
-      # Sunucuda zaten kurulu olan CUDA 12.x sürümünü otomatik olarak yola (PATH) ekliyoruz
-      - name: Add CUDA to PATH
+      # Bulut bilgisayarında zaten yüklü gelen hazır CUDA'yı doğrudan aktif ediyoruz
+      - name: Configure Local CUDA
         run: |
           echo "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2\bin" >> $GITHUB_PATH
           echo "CUDA_PATH=C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.2" >> $GITHUB_ENV
@@ -19,7 +19,7 @@ jobs:
         run: |
           nvcc -O3 --shared -arch=sm_89 libcubwt.cu -o libcubwt.dll
 
-      # Üretilen DLL'i indirme paketi haline getirme
+      # Üretilen DLL dosyasını indirme paketi haline getirme
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
