@@ -1,0 +1,23 @@
+name: Windows-CUDA-Build
+on: [workflow_dispatch] # Sana elle tetikleme butonu verir
+
+jobs:
+  build:
+    runs-on: windows-2022 # Tam uyumlu VS 2022 sürümünü zorunlu kılıyoruz!
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install CUDA
+        uses: Jimver/cuda-toolkit@v0.2.19
+        with:
+          cuda: '12.2.0' # VS 2022 ile kusursuz çalışan kararlı sürüm
+
+      - name: Build DLL
+        run: |
+          nvcc -O3 --shared -arch=sm_89 libcubwt.cu -o libcubwt.dll
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libcubwt-rtx4050-windows
+          path: libcubwt.dll
